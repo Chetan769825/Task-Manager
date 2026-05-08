@@ -5,12 +5,17 @@ import { LuPaperclip } from 'react-icons/lu';
 const AddAttachmentsInput = ({ attachments, setAttachments }) => {
     const [option, setOption] = useState("");
 
-    const handleAddoption = () => {
-        if (option.trim()) {
-            setAttachments([...attachments, option.trim()]);
-            setOption("");
-        }
-    };
+const handleAddoption = () => {
+    if (!option.trim()) return;
+
+    if (!option.startsWith("http")) {
+        alert("Please enter a valid URL (must start with http/https)");
+        return;
+    }
+
+    setAttachments([...attachments, option.trim()]);
+    setOption("");
+};
 
     const handleDeleteOption = (index) => {
         const updateArr = attachments.filter((_, idx) => idx !== index);

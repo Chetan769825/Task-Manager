@@ -1,4 +1,4 @@
-# 📌 Sauf Task Manager 
+# 📌 Ethara-AI Task Manager 
 
 A full-featured task management application designed for individuals and teams to organize, track, and collaborate on tasks effectively.
 
@@ -29,15 +29,8 @@ A full-featured task management application designed for individuals and teams t
 
 ## 🛠️ Setup Instructions
 
-### 1. Clone the Repository
-   ```bash
-   git clone https://github.com/Rushikesh-Thorat/Task-Manager-mern.git
 
-   cd Task-Manager-mern
-```
----
-
-#### 📁 Project Structure
+# 📁 Project Structure
 
 ```
 root/
@@ -53,9 +46,9 @@ root/
 
 ---
 
-### 2. Install Dependencies
+### 1. Install Dependencies
 
-#### Server (Backend)
+# Server (Backend)
 
 ```bash
 cd backend
@@ -81,7 +74,7 @@ Create a `.env` file in the `backend`.
 ### Example `.env` for `backend`:
 
 ```
-PORT=5000
+PORT=8000
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
 ADMIN_INVITE_TOKEN=your_admin_token
@@ -108,25 +101,4 @@ npm run dev
 
 Open your browser and go to `http://localhost:5173`
 
----
 
-## 📸 Project Layout (Structure)
-![](Project-Layout/1auth.png)
-![](Project-Layout/2Admin1.png)
-![](Project-Layout/2Admin2.png)
-![](Project-Layout/3User1.png)
-![](Project-Layout/3User2.png)
----
-
-## 📸 Project Screenshots
-### Login / SignUp Page
-![](Project-ScreenShots/1.png)
-![](Project-ScreenShots/2.png)
-### Admin Pages
-![](Project-ScreenShots/3.png)
-![](Project-ScreenShots/4.png)
-![](Project-ScreenShots/5.png)
-### User Pages
-![](Project-ScreenShots/6.png)
-![](Project-ScreenShots/7.png)
----

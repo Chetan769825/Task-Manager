@@ -7,6 +7,7 @@ import toast from 'react-hot-toast'
 import { useLocation, useNavigate } from 'react-router-dom'
 import moment from 'moment'
 import { LuTrash2 } from 'react-icons/lu'
+
 import SelectDropdown from '../../components/Inputs/SelectDropdown'
 import SelectUsers from '../../components/Inputs/SelectUsers'
 import TodoListInput from '../../components/Inputs/TodoListInput'
@@ -15,7 +16,6 @@ import DeleteAlert from '../../components/DeleteAlert'
 import Modal from '../../components/Modal'
 
 const CreateTask = () => {
-
   const location = useLocation()
   const navigate = useNavigate()
   const { taskId } = location.state || {}
@@ -25,7 +25,7 @@ const CreateTask = () => {
     description: '',
     priority: 'Low',
     dueDate: null,
-    assignedTo: '',
+    assignedTo: [],          // FIXED
     todoChecklist: [],
     attachments: [],
   })
@@ -39,14 +39,142 @@ const CreateTask = () => {
     setTaskData((prev) => ({ ...prev, [key]: value }))
   }
 
-  const handleSubmit = async () => { /* unchanged */ }
-  const createTask = async () => { /* unchanged */ }
-  const updateTask = async () => { /* unchanged */ }
-  const deleteTask = async () => { /* unchanged */ }
-  const getTaskDetailsById = async () => { /* unchanged */ }
+  const clearData = () => {
+    setTaskData({
+      title: '',
+      description: '',
+      priority: 'Low',
+      dueDate: null,
+      assignedTo: [],
+      todoChecklist: [],
+      attachments: [],
+    })
+  }
+
+  // CREATE
+  const createTask = async () => {
+    try {
+      setLoading(true)
+
+      const todoList = taskData.todoChecklist.map((item) => ({
+        text: item,
+        completed: false,
+      }))
+
+      await axiosInstance.post(API_PATHS.TASKS.CREATE_TASK, {
+        ...taskData,
+        dueDate: taskData.dueDate
+          ? new Date(taskData.dueDate).toISOString()
+          : null,
+        todoChecklist: todoList,
+      })
+
+      toast.success("Task created successfully")
+      clearData()
+      navigate('/admin/tasks')
+
+    } catch (error) {
+      console.error(error)
+      toast.error("Failed to create task")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // UPDATE
+  const updateTask = async () => {
+    try {
+      setLoading(true)
+
+      const todoList = taskData.todoChecklist.map((item) => {
+        const prev = currentTask?.todoChecklist || []
+        const match = prev.find((t) => t.text === item)
+
+        return {
+          text: item,
+          completed: match ? match.completed : false,
+        }
+      })
+
+      await axiosInstance.put(
+        API_PATHS.TASKS.UPDATE_TASK(taskId),
+        {
+          ...taskData,
+          dueDate: taskData.dueDate
+            ? new Date(taskData.dueDate).toISOString()
+            : null,
+          todoChecklist: todoList,
+        }
+      )
+
+      toast.success("Task updated successfully")
+      navigate('/admin/tasks')
+
+    } catch (error) {
+      console.error(error)
+      toast.error("Failed to update task")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // DELETE
+  const deleteTask = async () => {
+    try {
+      await axiosInstance.delete(API_PATHS.TASKS.DELETE_TASK(taskId))
+      toast.success("Task deleted successfully")
+      setOpenDeleteAlert(false)
+      navigate('/admin/tasks')
+    } catch (error) {
+      console.error(error)
+      toast.error("Delete failed")
+    }
+  }
+
+  // GET BY ID
+  const getTaskDetailsById = async () => {
+    try {
+      const res = await axiosInstance.get(
+        API_PATHS.TASKS.GET_TASK_BY_ID(taskId)
+      )
+
+      const task = res.data
+      setCurrentTask(task)
+
+      setTaskData({
+        title: task.title,
+        description: task.description,
+        priority: task.priority,
+        dueDate: task.dueDate
+          ? moment(task.dueDate).format("YYYY-MM-DD")
+          : null,
+        assignedTo: task.assignedTo?.map((u) => u._id) || [],
+        todoChecklist: task.todoChecklist?.map((t) => t.text) || [],
+        attachments: task.attachments || [],
+      })
+
+    } catch (error) {
+      console.error(error)
+      toast.error("Failed to load task")
+    }
+  }
+
+  // SUBMIT
+  const handleSubmit = async () => {
+    setError('')
+
+    if (!taskData.title.trim()) return setError("Title is required")
+    if (!taskData.description.trim()) return setError("Description is required")
+    if (!taskData.dueDate) return setError("Due date is required")
+    if (!taskData.assignedTo.length) return setError("Assign at least one user")
+    if (!taskData.todoChecklist.length) return setError("Add at least one todo")
+
+    if (taskId) updateTask()
+    else createTask()
+  }
 
   useEffect(() => {
-    if (taskId) getTaskDetailsById(taskId)
+    if (taskId) getTaskDetailsById()
   }, [taskId])
 
   return (
@@ -55,141 +183,100 @@ const CreateTask = () => {
       <div className="min-h-screen text-white py-6 space-y-6">
 
         {/* HEADER */}
-        <div className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl p-5 flex items-center justify-between">
+        <div className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl p-5 flex justify-between items-center">
 
           <div>
             <h2 className="text-xl font-semibold">
               {taskId ? 'Update Task' : 'Create Task'}
             </h2>
-            <p className="text-sm text-gray-400 mt-1">
-              Build and manage your task workflow
+            <p className="text-sm text-gray-400">
+              AI powered task management
             </p>
           </div>
 
           {taskId && (
             <button
               onClick={() => setOpenDeleteAlert(true)}
-              className="flex items-center gap-2 px-3 py-2 rounded-xl
-              bg-red-500/10 border border-red-400/20 text-red-300 hover:bg-red-500/20 transition"
+              className="flex items-center gap-2 px-3 py-2 rounded-xl bg-red-500/10 border border-red-400/20 text-red-300"
             >
               <LuTrash2 />
               Delete
             </button>
           )}
-
         </div>
 
-        {/* FORM GRID */}
+        {/* FORM */}
         <div className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl p-6">
 
-          {/* TITLE */}
-          <div className="mb-4">
-            <label className="text-xs text-gray-200">Task Title</label>
+          <input
+            className="w-full mb-3 px-3 py-2 rounded-xl bg-white/5 border border-white/10"
+            placeholder="Task Title"
+            value={taskData.title}
+            onChange={(e) => handleValueChange('title', e.target.value)}
+          />
+
+          <textarea
+            className="w-full mb-3 px-3 py-2 rounded-xl bg-white/5 border border-white/10"
+            placeholder="Description"
+            rows={4}
+            value={taskData.description}
+            onChange={(e) => handleValueChange('description', e.target.value)}
+          />
+
+          <div className="grid md:grid-cols-3 gap-4">
+
+            <SelectDropdown
+              options={PRIORITY_DATA}
+              value={taskData.priority}
+              onChange={(v) => handleValueChange('priority', v)}
+            />
+
             <input
-              className="w-full mt-1 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-indigo-400"
-              placeholder="Create App UI"
-              name="title"
-              value={taskData.title}
-              onChange={({ target }) => handleValueChange(target.name, target.value)}
+              type="date"
+              className="px-3 py-2 rounded-xl bg-white/5 border border-white/10"
+              value={taskData.dueDate || ''}
+              onChange={(e) => handleValueChange('dueDate', e.target.value)}
             />
-          </div>
 
-          {/* DESCRIPTION */}
-          <div className="mb-4">
-            <label className="text-xs text-gray-200">Description</label>
-            <textarea
-              rows={4}
-              className="w-full mt-1 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-indigo-400"
-              placeholder="Describe task"
-              value={taskData.description}
-              onChange={({ target }) => handleValueChange('description', target.value)}
+            <SelectUsers
+              selectedUsers={taskData.assignedTo}
+              setSelectedUsers={(v) => handleValueChange('assignedTo', v)}
             />
-          </div>
-
-          {/* FIELDS */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-            <div>
-              <label className="text-xs text-gray-200">Priority</label>
-              <SelectDropdown
-                options={PRIORITY_DATA}
-                value={taskData.priority}
-                onChange={(value) => handleValueChange('priority', value)}
-              />
-            </div>
-
-            <div>
-              <label className="text-xs text-gray-200">Due Date</label>
-              <input
-                type="date"
-                className="w-full mt-1 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white"
-                value={
-                  taskData.dueDate
-                    ? moment(taskData.dueDate).format('YYYY-MM-DD')
-                    : ''
-                }
-                onChange={({ target }) => handleValueChange('dueDate', target.value)}
-              />
-            </div>
-
-            <div>
-              <label className="text-xs text-gray-200">Assign To</label>
-              <SelectUsers
-                selectedUsers={taskData.assignedTo}
-                setSelectedUsers={(value) => handleValueChange('assignedTo', value)}
-              />
-            </div>
 
           </div>
 
-          {/* TODO */}
-          <div className="mt-5">
-            <label className="text-xs text-gray-200">TODO Checklist</label>
-            <div className="mt-1">
-              <TodoListInput
-                todoList={taskData.todoChecklist || []}
-                setTodoList={(value) => handleValueChange('todoChecklist', value)}
-              />
-            </div>
-          </div>
+          <TodoListInput
+            todoList={taskData.todoChecklist}
+            setTodoList={(v) => handleValueChange('todoChecklist', v)}
+          />
 
-          {/* ATTACHMENTS */}
-          <div className="mt-5">
-            <label className="text-xs text-gray-200">Attachments</label>
-            <AddAttachmentsInput
-              attachments={taskData.attachments}
-              setAttachments={(value) => handleValueChange('attachments', value)}
-            />
-          </div>
+          <AddAttachmentsInput
+            attachments={taskData.attachments}
+            setAttachments={(v) => handleValueChange('attachments', v)}
+          />
 
-          {/* ERROR */}
-          {error && (
-            <p className="text-sm text-red-400 mt-4">{error}</p>
-          )}
+          {error && <p className="text-red-400 text-sm mt-3">{error}</p>}
 
-          {/* ACTION */}
-          <div className="mt-6 flex justify-end">
+          <div className="flex justify-end mt-5">
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="px-5 py-2 rounded-xl bg-indigo-500/40 border border-indigo-200 text-indigo-100 hover:bg-indigo-500 transition"
+              className="px-5 py-2 rounded-xl bg-indigo-500/40 border border-indigo-200"
             >
               {taskId ? 'UPDATE TASK' : 'CREATE TASK'}
             </button>
           </div>
 
         </div>
-
       </div>
 
-      {/* MODAL */}
       <Modal
         isOpen={openDeleteAlert}
         onClose={() => setOpenDeleteAlert(false)}
         title="Delete Task"
       >
         <DeleteAlert
-          content="Are you sure want to delete this task?"
+          content="Are you sure?"
           onDelete={deleteTask}
         />
       </Modal>
