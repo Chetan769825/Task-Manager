@@ -12,11 +12,14 @@ const reportRoutes  = require("./routes/reportRoutes");
 const app = express();
 
 app.use(
-    cors({
-        origin: process.env.CLIENT_URL || '*',
-        methods: ["GET", "POST", "PUT", "DELETE"],
-        allowedHeaders: ["Content-Type", "Authorization"],
-    })
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://task-manager-frontend-1d37.onrender.com"
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
 );
 
 //Connect Databse
@@ -38,5 +41,6 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 //start Server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
+app.listen(PORT, "0.0.0.0", () =>
+  console.log(`Server running on port ${PORT}`)
+);
