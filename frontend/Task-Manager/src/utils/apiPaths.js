@@ -1,5 +1,4 @@
-export const BASE_URL = "https://task-manager-mern-jarc.onrender.com";
-
+export const BASE_URL = "http://localhost:8000";
 export const API_PATHS = {
     AUTH: {
         SIGNUP: "/api/auth/register",

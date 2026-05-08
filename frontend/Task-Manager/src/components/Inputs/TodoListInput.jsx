@@ -17,50 +17,91 @@ const TodoListInput = ({ todoList = [], setTodoList }) => {
   };
 
   return (
-    <div>
-      {todoList.map((item, index) => (
-        <div
-          key={item + index}
-          className="flex justify-between bg-gray-50 border-gray-100 px-3 py-2 rounded-md mb-3 mt-2"
-        >
-          <p className="text-xs text-black">
-            <span className="text-xs text-gray-400 font-semibold mr-2">
-              {index < 9 ? `0${index + 1}` : index + 1}
-            </span>
-            {item}
-          </p>
-          <button
-            className="cursor-pointer"
-            onClick={() => handleDeleteOption(index)}
-          >
-            <HiOutlineTrash className="text-lg text-red-500" />
-          </button>
-        </div>
-      ))}
+    <div className="space-y-3">
 
+      {/* LIST */}
+      <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+
+        {todoList.map((item, index) => (
+          <div
+            key={item + index}
+            className="
+              flex items-center justify-between
+              px-3 py-2 rounded-xl
+              bg-white/5 border border-white/10
+              backdrop-blur-xl
+              hover:border-indigo-400/20 transition
+            "
+          >
+            <div className="flex items-center gap-2">
+
+              <span className="
+                text-[10px] px-2 py-0.5 rounded-full
+                bg-indigo-500/10 text-indigo-300 border border-indigo-400/20
+              ">
+                {index < 9 ? `0${index + 1}` : index + 1}
+              </span>
+
+              <p className="text-sm text-gray-200 line-clamp-1">
+                {item}
+              </p>
+
+            </div>
+
+            <button
+              onClick={() => handleDeleteOption(index)}
+              className="p-1 rounded-lg hover:bg-red-500/10 transition"
+            >
+              <HiOutlineTrash className="text-red-400 text-lg" />
+            </button>
+
+          </div>
+        ))}
+
+      </div>
+
+      {/* INPUT BAR */}
       <form
         onSubmit={(e) => {
           e.preventDefault();
           handleAddOption();
         }}
+        className="
+          flex items-center gap-2
+          p-2 rounded-xl
+          bg-white/5 border border-white/10
+          backdrop-blur-xl
+        "
       >
-        <div className="flex items-center gap-5 mt-4">
-          <input
-            type="text"
-            placeholder="Enter Task"
-            value={option}
-            onChange={({ target }) => setOption(target.value)}
-            className="w-full text-[13px] text-black outline-none bg-white border border-gray-100 px-3 py-2 rounded-md"
-          />
 
-          <button className="card-btn text-nowrap" type="submit">
-            <HiMiniPlus className="text-lg" /> Add
-          </button>
-        </div>
+        <input
+          type="text"
+          placeholder="Add new task step..."
+          value={option}
+          onChange={({ target }) => setOption(target.value)}
+          className="
+            flex-1 bg-transparent outline-none
+            text-sm text-white placeholder-gray-500
+            px-2
+          "
+        />
+
+        <button
+          type="submit"
+          className="
+            flex items-center gap-1 px-3 py-1.5 rounded-lg
+            bg-indigo-500/20 border border-indigo-400/20
+            text-indigo-200 hover:bg-indigo-500/30 transition
+          "
+        >
+          <HiMiniPlus className="text-lg" />
+          Add
+        </button>
+
       </form>
+
     </div>
   );
 };
 
 export default TodoListInput;
-

@@ -1,50 +1,104 @@
 import React from 'react'
 import moment from 'moment';
 
-const TaskListTable = ({tableData}) => {
-    const getStatusBadgeColor = (status) => {
-        switch (status){
-            case 'Completed': return 'bg-green-200 text-green-700 border border-green-300';
-            case 'Pending': return 'bg-purple-200 text-purple-700 border border-purple-300';
-            case 'In Progress': return 'bg-cyan-200 text-cyan-700 border border-cyan-300';
-            default: return 'bg-gray-200 text-gray-700 border border-gray-300';
-        }
-    };
-    const getPriorityBadgeColor = (priority) => {
-        switch (priority){
-            case 'High': return 'bg-red-200 text-red-700 border border-red-300';
-            case 'Medium': return 'bg-orange-200 text-orange-700 border border-orange-300';
-            case 'Low': return 'bg-green-200 text-green-700 border border-green-300';
-            default: return 'bg-gray-200 text-gray-700 border border-gray-300';
-        }
-    };
-  return (
-    <div className="overflow-x-auto p-0 rounded-lg mt-3">
-        <table className="min-w-full">
-            <thead>
-                <tr className="text-left">
-                    <th className="py-3 px-4 text-gray-800 font-medium text-[13px]">Name</th>
-                    <th className="py-3 px-4 text-gray-800 font-medium text-[13px]">Status</th>
-                    <th className="py-3 px-4 text-gray-800 font-medium text-[13px]">Priority</th>
-                    <th className="py-3 px-4 text-gray-800 font-medium text-[13px] hidden md:table-cell">Created On</th>
-                </tr>
-            </thead>
-            <tbody className="">
-                {tableData.map((task) => (
-                    <tr className="border-t border-gray-200" key={task._id}>
-                        <td className="my-3 mx-4 text-gray-700 text-[13px] line-clamp-1 overflow-hidden">{task.title}</td>
-                        <td className="py-4 px-4"><span className={`px-2 py-1 text-xs rounded inline-block ${getStatusBadgeColor(task.status)}`}>{task.status}</span>
-                        </td>
-                        <td className="py-4 px-4"><span className={`px-2 py-1 text-xs rounded inline-block ${getPriorityBadgeColor(task.priority)}`}>{task.priority}</span>
-                        </td>
-                        <td className="py-4 px-4 text-gray-700 text-[13px] text-nowrap hidden md:table-cell">{task.createdAt ? moment(task.createdAt).format('Do MMM YYYY') : 'N/A'}
-                        </td>
-                    </tr>
-                ))}
-            </tbody>
-        </table>
-    </div>
-  )
-}
+const TaskListTable = ({ tableData }) => {
 
-export default TaskListTable
+  const getStatusBadgeColor = (status) => {
+    switch (status) {
+      case 'Completed':
+        return 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/20';
+      case 'Pending':
+        return 'bg-purple-500/10 text-purple-300 border border-purple-500/20';
+      case 'In Progress':
+        return 'bg-cyan-500/10 text-cyan-300 border border-cyan-500/20';
+      default:
+        return 'bg-gray-500/10 text-gray-300 border border-gray-500/20';
+    }
+  };
+
+  const getPriorityBadgeColor = (priority) => {
+    switch (priority) {
+      case 'High':
+        return 'bg-red-500/10 text-red-300 border border-red-500/20';
+      case 'Medium':
+        return 'bg-orange-500/10 text-orange-300 border border-orange-500/20';
+      case 'Low':
+        return 'bg-green-500/10 text-green-300 border border-green-500/20';
+      default:
+        return 'bg-gray-500/10 text-gray-300 border border-gray-500/20';
+    }
+  };
+
+  return (
+    <div className="overflow-x-auto mt-4 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl">
+
+      <table className="min-w-full">
+
+        {/* HEADER */}
+        <thead>
+          <tr className="text-left border-b border-white/10">
+
+            <th className="py-4 px-5 text-xs font-medium text-gray-300 uppercase tracking-wider">
+              Task
+            </th>
+
+            <th className="py-4 px-5 text-xs font-medium text-gray-300 uppercase tracking-wider">
+              Status
+            </th>
+
+            <th className="py-4 px-5 text-xs font-medium text-gray-300 uppercase tracking-wider">
+              Priority
+            </th>
+
+            <th className="py-4 px-5 text-xs font-medium text-gray-300 uppercase tracking-wider hidden md:table-cell">
+              Created
+            </th>
+
+          </tr>
+        </thead>
+
+        {/* BODY */}
+        <tbody>
+
+          {tableData?.map((task, index) => (
+            <tr
+              key={task._id}
+              className="border-b border-white/5 hover:bg-white/5 transition"
+            >
+
+              {/* TITLE */}
+              <td className="py-4 px-5 text-sm text-white max-w-[250px] truncate">
+                {task.title}
+              </td>
+
+              {/* STATUS */}
+              <td className="py-4 px-5">
+                <span className={`px-3 py-1 text-xs rounded-full ${getStatusBadgeColor(task.status)}`}>
+                  {task.status}
+                </span>
+              </td>
+
+              {/* PRIORITY */}
+              <td className="py-4 px-5">
+                <span className={`px-3 py-1 text-xs rounded-full ${getPriorityBadgeColor(task.priority)}`}>
+                  {task.priority}
+                </span>
+              </td>
+
+              {/* DATE */}
+              <td className="py-4 px-5 text-sm text-gray-400 hidden md:table-cell">
+                {task.createdAt
+                  ? moment(task.createdAt).format('DD MMM YYYY')
+                  : 'N/A'}
+              </td>
+
+            </tr>
+          ))}
+
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default TaskListTable;

@@ -21,7 +21,9 @@ const SelectUsers = ({ selectedUsers, setSelectedUsers }) => {
 
     const toggleUserSelection = (userId) => {
         setTempSelectedUsers((prev) =>
-            prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev, userId]
+            prev.includes(userId)
+                ? prev.filter((id) => id !== userId)
+                : [...prev, userId]
         );
     };
 
@@ -42,72 +44,122 @@ const SelectUsers = ({ selectedUsers, setSelectedUsers }) => {
         if (selectedUsers.length === 0) {
             setTempSelectedUsers([]);
         }
-        return () => {};
     }, [selectedUsers]);
 
     return (
-        <div className='space-y-4 mt-2'>
-            {selectedUserAvatars.length === 0 && (
-                <button className="card-btn" onClick={() => setIsModalOpen(true)}>
-                    <LuUsers className="text-sm" /> Add Members
-                </button>
-            )}
+        <div className="space-y-3 mt-2">
 
-            {selectedUserAvatars.length > 0 && (
-                <div className="cursor-pointer" onClick={() => setIsModalOpen(true)}>
-                    <AvatarGroup avatars={selectedUserAvatars} maxVisible ={3} />
+            {/* TRIGGER */}
+            {selectedUserAvatars.length === 0 ? (
+                <button
+                    onClick={() => setIsModalOpen(true)}
+                    className="
+                        w-full flex items-center justify-center gap-2
+                        px-3 py-2 rounded-xl
+                        bg-white/5 border border-white/10
+                        text-gray-300 hover:text-white
+                        hover:border-indigo-400/30
+                        backdrop-blur-xl transition
+                    "
+                >
+                    <LuUsers />
+                    Add Members
+                </button>
+            ) : (
+                <div
+                    onClick={() => setIsModalOpen(true)}
+                    className="
+                        cursor-pointer p-2 rounded-xl
+                        bg-white/5 border border-white/10
+                        backdrop-blur-xl hover:border-indigo-400/30
+                        transition
+                    "
+                >
+                    <AvatarGroup avatars={selectedUserAvatars} maxVisible={3} />
                 </div>
             )}
 
+            {/* MODAL */}
             <Modal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                title="Select Users"
+                title="Assign Team Members"
             >
-                <div className="space-y-4 h-[60vh] overflow-y-auto">
-                    {allUsers.map((user) => (
-                        <div
-                            key={user._id}
-                            className="flex items-center gap-4 p-3 border-b border-gray-300"
-                        >
-                            <img
-                                src={user.profileImageUrl || "https://cdn.pixabay.com/photo/2017/07/18/23/23/user-2517433_1280.png"}
-                                alt={user.name}
-                                className="w-10 h-10 rounded-full"
-                            />
+                <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
 
-                            <div className="flex-1">
-                                <p className="font-medium text-gray-800 dark:text-white">
-                                    {user.name}
-                                </p>
-                                <p className="text-[13px] text-gray-500">{user.email}</p>
+                    {allUsers.map((user) => {
+                        const isSelected = tempSelectedUsers.includes(user._id);
+
+                        return (
+                            <div
+                                key={user._id}
+                                onClick={() => toggleUserSelection(user._id)}
+                                className={`
+                                    flex items-center gap-3 p-3 rounded-xl cursor-pointer
+                                    border transition
+                                    ${isSelected
+                                        ? "bg-indigo-500/10 border-indigo-400/30"
+                                        : "bg-white/5 border-white/10 hover:border-white/20"
+                                    }
+                                `}
+                            >
+
+                                <img
+                                    src={
+                                        user.profileImageUrl ||
+                                        "https://cdn.pixabay.com/photo/2017/07/18/23/23/user-2517433_1280.png"
+                                    }
+                                    className="w-10 h-10 rounded-full border border-white/10"
+                                    alt={user.name}
+                                />
+
+                                <div className="flex-1">
+                                    <p className="text-sm text-white font-medium">
+                                        {user.name}
+                                    </p>
+                                    <p className="text-xs text-gray-400">
+                                        {user.email}
+                                    </p>
+                                </div>
+
+                                <div className="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        checked={isSelected}
+                                        readOnly
+                                        className="w-4 h-4 accent-indigo-500"
+                                    />
+                                </div>
+
                             </div>
+                        );
+                    })}
 
-                            <input
-                                type="checkbox"
-                                checked={tempSelectedUsers.includes(user._id)}
-                                onChange={() => toggleUserSelection(user._id)}
-                                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm outline-none"
-                            />
-                        </div>
-                    ))}
                 </div>
 
-                <div className="flex justify-end gap-4 pt-4">
+                {/* ACTIONS */}
+                <div className="flex justify-end gap-3 pt-4 mt-4 border-t border-white/10">
+
                     <button
-                        className="card-btn"
                         onClick={() => setIsModalOpen(false)}
+                        className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:text-white"
                     >
                         Cancel
                     </button>
-                    <button className="card-btn-fill" onClick={handleAssign}>
+
+                    <button
+                        onClick={handleAssign}
+                        className="px-4 py-2 rounded-xl bg-indigo-500/20 border border-indigo-400/30 text-indigo-200 hover:bg-indigo-500/30"
+                    >
                         Done
                     </button>
+
                 </div>
+
             </Modal>
+
         </div>
     );
 };
 
 export default SelectUsers;
-

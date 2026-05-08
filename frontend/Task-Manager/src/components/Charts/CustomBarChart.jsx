@@ -1,62 +1,90 @@
 import React from 'react'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Cell
+} from 'recharts';
 
-const CustomBarChart = ({data}) => {
+const CustomBarChart = ({ data }) => {
 
-    const getBarColor = (entry) => {
-        switch (entry?.priority) {
-            case 'Low':
-                return '#00BC7D';
-            case 'Medium':
-                return '#FE9900';
-            case 'High':
-                return '#FF1F57';
-            default:
-                return '#00BC7D';
-        }
-    };
+  const getBarColor = (entry) => {
+    switch (entry?.priority) {
+      case 'Low':
+        return '#22c55e';
+      case 'Medium':
+        return '#a855f7';
+      case 'High':
+        return '#ef4444';
+      default:
+        return '#a855f7';
+    }
+  };
 
-    const CustomTooltip = ({ active, payload }) => {
-        if (active && payload && payload.length) {
-            return (
-                <div className="bg-white p-2 rounded-lg shadow-md border border-gray-300">
-                    <p className="text-sm font-semibold text-purple-800 mb-1">{payload[0].payload.priority}</p>
-                    <p className="text-sm text-gray-600">Count:{""} 
-                        <span className="text-sm font-medium text-gray-900">{payload[0].payload.count}</span>
-                        </p> 
-                </div>
-            );
-        }
-        return null;
-    };
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white/10 backdrop-blur-xl border border-white/10 rounded-xl p-3 shadow-lg text-white">
+
+          <p className="text-sm font-semibold text-indigo-200 mb-1">
+            {payload[0].payload.priority}
+          </p>
+
+          <p className="text-xs text-gray-300">
+            Count:
+            <span className="text-white font-medium ml-1">
+              {payload[0].payload.count}
+            </span>
+          </p>
+
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
-    <div className="bg-white mt-6">
-        <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={data} >
-            <CartesianGrid stroke='none'/>
+    <div className="mt-4 bg-transparent">
 
-            <XAxis dataKey="priority" tick= {{fontSize: 12, fill: '#555'}} stroke='none' />
+      <ResponsiveContainer width="100%" height={300}>
 
-            <YAxis tick= {{fontSize: 12, fill: '#555'}} stroke='none'/>
+        <BarChart data={data}>
 
-            <Tooltip content={<CustomTooltip />} cursor={{stroke:'transparent', fill:'transparent'}} />
+          {/* grid removed for cleaner AI look */}
+          <CartesianGrid stroke="rgba(255,255,255,0.05)" />
 
-                <Bar
-                    dataKey="count"
-                    nameKey="priority"
-                    fill= "#FF8042"
-                    radius={[10, 10, 0, 0]}
-                    activeDot={{ r: 8, fill: "yellow" }}
-                    activeStyle={{ fill: "green" }}
-                    >
-                        {data.map((entry, index) => (
-                            <Cell key={index} fill={getBarColor(entry)} />
-                        ))}
-                </Bar>
-            </BarChart>
-        </ResponsiveContainer>
+          <XAxis
+            dataKey="priority"
+            tick={{ fontSize: 12, fill: '#cbd5e1' }}
+            stroke="rgba(255,255,255,0.1)"
+          />
+
+          <YAxis
+            tick={{ fontSize: 12, fill: '#cbd5e1' }}
+            stroke="rgba(255,255,255,0.1)"
+          />
+
+          <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(139,92,246,0.1)' }} />
+
+          <Bar
+            dataKey="count"
+            radius={[10, 10, 0, 0]}
+          >
+            {data?.map((entry, index) => (
+              <Cell key={index} fill={getBarColor(entry)} />
+            ))}
+          </Bar>
+
+        </BarChart>
+
+      </ResponsiveContainer>
+
     </div>
-  )
-}
+  );
+};
 
-export default CustomBarChart
+export default CustomBarChart;

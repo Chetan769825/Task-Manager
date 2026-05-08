@@ -10,7 +10,13 @@ const generateToken = (userId) => {
 
 const registerUser = async (req, res) => {
     try {
+        console.log("REGISTER API HIT");
+        console.log("REQ BODY:", req.body);
+
         const { name, email, password, profileImageUrl, adminInviteToken } = req.body;
+
+        console.log("Body Token:", adminInviteToken);
+        console.log("ENV Token:", process.env.ADMIN_INVITE_TOKEN);
 
         const userExists = await User.findOne({ email });
         if (userExists) {

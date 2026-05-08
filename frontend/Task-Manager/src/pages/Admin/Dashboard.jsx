@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { useUserAuth } from '../../hooks/useUserAuth';
 import { UserContext } from '../../context/userContext';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import { useNavigate } from 'react-router-dom';
@@ -15,10 +14,8 @@ import CustomBarChart from '../../components/Charts/CustomBarChart';
 
 const COLORS = ["#8D51FF", "#00B8DB", "#7BCE00"];
 
-
 const Dashboard = () => {
   const { user } = useContext(UserContext);
-
   const navigate = useNavigate();
 
   const [dashboardData, setDashboardData] = useState({
@@ -28,6 +25,7 @@ const Dashboard = () => {
     },
     recentTasks: [],
   });
+
   const [pieChartData, setPieChartData] = useState([]);
   const [barChartData, setBarChartData] = useState([]);
 
@@ -51,21 +49,17 @@ const Dashboard = () => {
     const taskDustrubution = charts?.taskDustrubution || null;
     const taskPriorityLevels = charts?.taskPriorityLevels || null;
 
-    const taskDustrubutionData = [
+    setPieChartData([
       { status: "Pending", count: taskDustrubution?.Pending || 0 },
       { status: "In Progress", count: taskDustrubution?.InProgress || 0 },
       { status: "Completed", count: taskDustrubution?.Completed || 0 },
-    ];
+    ]);
 
-    setPieChartData(taskDustrubutionData);
-
-    const PriorityLevelData = [
+    setBarChartData([
       { priority: "Low", count: taskPriorityLevels?.Low || 0 },
       { priority: "Medium", count: taskPriorityLevels?.Medium || 0 },
       { priority: "High", count: taskPriorityLevels?.High || 0 },
-    ];
-
-    setBarChartData(PriorityLevelData);
+    ]);
   };
 
   const onSeeMore = () => {
@@ -74,76 +68,117 @@ const Dashboard = () => {
 
   return (
     <DashboardLayout activeMenu="Dashboard">
-      <div className="card my-5">
-        <div>
-          <div className="col-span-3">
-            <h2 className="text-xl md:text-2xl">
-              Good Morning! {user?.name}
+
+      <div className="min-h-screen text-white space-y-6 py-6">
+
+        {/* HEADER */}
+        <div className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl p-6 relative overflow-hidden">
+
+          <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-transparent" />
+
+          <div className="relative">
+            <h2 className="text-xl md:text-2xl font-semibold">
+              Good Morning, <span className="text-indigo-300">{user?.name}</span>
             </h2>
-            <p className="text-xs md:text-[13px] text-gray-400 mt-1.5">
+
+            <p className="text-sm text-gray-400 mt-2">
               {moment().format("dddd Do MMMM YYYY")}
             </p>
           </div>
+
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 md-gap-6 mt-5">
+        {/* INFO CARDS */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+
           <InfoCard
             label="Total Tasks"
             value={addThousandsSeparator(dashboardData.charts?.taskDustrubution?.All || 0)}
-            color="bg-blue-600"
+            color="bg-indigo-500"
           />
 
           <InfoCard
-            label="Pending Tasks"
+            label="Pending"
             value={addThousandsSeparator(dashboardData.charts?.taskDustrubution?.Pending || 0)}
-            color="bg-violet-500"
+            color="bg-purple-500"
           />
 
           <InfoCard
-            label="In Progress Tasks"
+            label="In Progress"
             value={addThousandsSeparator(dashboardData.charts?.taskDustrubution?.InProgress || 0)}
             color="bg-cyan-500"
           />
 
           <InfoCard
-            label="Completed Tasks"
+            label="Completed"
             value={addThousandsSeparator(dashboardData.charts?.taskDustrubution?.Completed || 0)}
-            color="bg-lime-500"
+            color="bg-emerald-500"
           />
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-4">
-        <div className="card">
-          <div className="flex items-center justify-between">
-            <h5 className="font-medium">Task Distribution</h5>
-          </div>
-          <CustomPieChart data={pieChartData} colors={COLORS} />
         </div>
 
-        <div className="card">
-          <div className="flex items-center justify-between">
-            <h5 className="font-medium">Task Priority Levels</h5>
-          </div>
-          <CustomBarChart data={barChartData} />
-        </div>
-      </div>
+        {/* AI ANALYTICS SECTION */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-4 md:my-6">
-        <div className="md:col-span-2">
-          <div className="card">
-            <div className="flex items-center justify-between">
-              <h5 className="text-lg">Recent Tasks</h5>
+          {/* PIE / AI INSIGHT */}
+          <div className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl p-6 relative overflow-hidden">
 
-              <button className="card-btn" onClick={onSeeMore}>
-                See All <LuArrowRight className="text-base" />
-              </button>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(139,92,246,0.25),transparent_60%)]" />
+
+            <div className="relative">
+
+              <div className="flex items-center justify-between mb-4">
+                <h5 className="text-white font-medium">
+                   Task Intelligence
+                </h5>
+
+                <span className="text-xs px-2 py-1 rounded-full bg-purple-500/20 text-purple-200 border border-purple-400/30">
+                  Live
+                </span>
+              </div>
+
+              <div className="text-xs text-gray-300 mb-4 space-y-1">
+                <p>• Workload distribution analyzed</p>
+                <p>• Focus area: <span className="text-cyan-300">In Progress</span></p>
+                <p>• System status: <span className="text-emerald-300">Optimal</span></p>
+              </div>
+
+              <CustomPieChart data={pieChartData} colors={COLORS} />
+
             </div>
-
-            <TaskListTable tableData={dashboardData.recentTasks} />
           </div>
+
+          {/* BAR CHART */}
+          <div className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl p-6">
+            <h5 className="text-white font-medium mb-4">
+              Priority Analysis
+            </h5>
+
+            <CustomBarChart data={barChartData} />
+          </div>
+
         </div>
+
+        {/* RECENT TASKS */}
+        <div className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl p-6">
+
+          <div className="flex items-center justify-between mb-4">
+            <h5 className="text-lg font-medium">Recent Tasks</h5>
+
+            <button
+              className="flex items-center gap-1 text-sm text-indigo-300 hover:text-indigo-200 transition"
+              onClick={onSeeMore}
+            >
+              See All <LuArrowRight />
+            </button>
+          </div>
+
+          <TaskListTable tableData={dashboardData.recentTasks} />
+
+        </div>
+
       </div>
+
     </DashboardLayout>
   );
 };
