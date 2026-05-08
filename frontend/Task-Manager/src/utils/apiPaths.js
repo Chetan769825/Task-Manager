@@ -1,4 +1,4 @@
-export const BASE_URL = "https://task-manager-production-a7d5.up.railway.app";
+export const BASE_URL = "https://task-manager-backend-sya5.onrender.com";
 export const API_PATHS = {
     AUTH: {
         SIGNUP: "/api/auth/register",
